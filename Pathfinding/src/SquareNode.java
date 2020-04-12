@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 public class SquareNode extends Rectangle
@@ -16,7 +19,6 @@ public class SquareNode extends Rectangle
 	boolean isEnd = false;
 	boolean isStart = false;
 	boolean isWall = false;
-	boolean runPathHere = false;
 	
 
 	SquareNode()
@@ -25,6 +27,8 @@ public class SquareNode extends Rectangle
 		this.setHeight(20);
 		this.setWidth(20);	
 		this.setStroke(Color.BLACK);	
+		
+
 	}
 	
 	public void setStartNode()
@@ -56,8 +60,9 @@ public class SquareNode extends Rectangle
 			}
 		}
 	}	
+
 	
-	
+
 	
 
 

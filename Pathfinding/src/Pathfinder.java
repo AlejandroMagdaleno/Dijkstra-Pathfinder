@@ -1,8 +1,14 @@
 import javafx.application.Application;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import java.util.*;
@@ -30,26 +36,60 @@ public class Pathfinder extends Application {
 	
 	public void start(Stage primaryStage)
 	{
+		VBox vbox = new VBox();
+		HBox hbox = new HBox();
+		Button button1 = new Button("Dijkstra!");
+		Button button2 = new Button("Set Start Node");
+		Button button3 = new Button("Set End Node");
+		
 		primaryStage.setTitle("Pathfinder");
 		
-		fillSquaresArray();		
-		squaresQueue.get(75).setStartNode();
-		squaresQueue.get(1378).setEndNode();
+		fillSquaresArray();	
 		
-		squaresQueue.get(500).isWall = true;
-		squaresQueue.sort((s1, s2) -> s1.Distance.compareTo(s2.Distance));
-
-		
-		dijkstra(squaresQueue.get(0));
-
-		for(SquareNode n: shortestPathSet)
+		button3.setOnAction((event)->
 		{
-			if(n.runPathHere) 
-				fastestPath(n);
-		}
+			for(SquareNode n: squaresQueue)
+			{
+				n.setOnMouseClicked((eventHandler)->
+				{
+					n.setEndNode();
+				});
+
+			}
+		});
 		
 
-		Scene scene = new Scene(grid);
+		button2.setOnAction((event)->
+		{
+			for(SquareNode n: squaresQueue)
+			{
+				n.setOnMouseClicked((eventHandler)->
+				{
+					n.setFill(Color.BLACK);
+					n.setStartNode();
+					squaresQueue.sort((s1, s2) -> s1.Distance.compareTo(s2.Distance));
+				});
+
+			}
+		});
+	
+
+		
+		
+
+		button1.setOnAction((event) -> 
+		{
+			dijkstra(squaresQueue.get(0));
+
+		});
+		
+
+		
+		
+		hbox.getChildren().addAll(button1, button2, button3);
+		vbox.getChildren().addAll(hbox, grid);
+
+		Scene scene = new Scene(vbox);
 		primaryStage.setScene(scene);
 		primaryStage.sizeToScene();
 		primaryStage.centerOnScreen();
@@ -88,10 +128,6 @@ public class Pathfinder extends Application {
 			source.Up = squaresArray[source.indR-1][source.indC];	  // assigns distances and directional nodes in all directions
 			source.Up.Distance = source.Distance + source.Up.Weight;
 			source.Up.Previous = squaresArray[source.indR][source.indC];
-			if(source.Up.isEnd)
-			{
-				source.runPathHere = true;
-			}
 		}
 		
 
@@ -100,26 +136,14 @@ public class Pathfinder extends Application {
 			source.Down = squaresArray[source.indR+1][source.indC];
 			source.Down.Distance = source.Distance + source.Down.Weight;
 			source.Down.Previous = squaresArray[source.indR][source.indC];
-			if(source.Down.isEnd)
-			{
-				source.runPathHere = true;
-			}
 		}
 		
-		if(source.indR == 0)
-		{
-			source.Up = null;
-		}
-			
+
 		if(source.indC < COLS -1)
 		{
 			source.Right = squaresArray[source.indR][source.indC+1];
 			source.Right.Distance = source.Distance + source.Right.Weight;
 			source.Right.Previous = squaresArray[source.indR][source.indC];
-			if(source.Right.isEnd)
-			{
-				source.runPathHere = true;
-			}
 		}
 		
 		if(source.indC > 0)
@@ -127,16 +151,8 @@ public class Pathfinder extends Application {
 			source.Left = squaresArray[source.indR][source.indC-1];
 			source.Left.Distance = source.Distance + source.Left.Weight;
 			source.Left.Previous = squaresArray[source.indR][source.indC];
-			if(source.Left.isEnd)
-			{
-				source.runPathHere = true;
-			}
-
 		}		
-		if(source.indC == 0)
-		{
-			source.Left = null;
-		}
+
 	
 		source.setVisited(); // assigns color depending on what kind of node it is and if it has been visited.
 	
@@ -156,62 +172,13 @@ public class Pathfinder extends Application {
 				dijkstra(squaresQueue.get(0));
 			}
 		}
-
-	
 	}
 	
-	public void fastestPath(SquareNode source)
+	public void drawFastestPath(SquareNode source)
 	{
-		int currentCount = source.Distance;
-		source.setFill(Color.BURLYWOOD);
-		if(source.Up.Distance < currentCount)
-		{
-			source.Up.setFill(Color.DARKGREY);
-			currentCount = source.Up.Distance;
-			if(source.isStart == false)
-			{
-				fastestPath(source.Up);
-			}
-		}
-		else if(source.Down.Distance < currentCount)
-		{
-			source.Down.setFill(Color.DARKGREY);
-			currentCount = source.Down.Distance;
-			if(source.isStart == false)
-			{
-				fastestPath(source.Down);
-			}
-		}
-		else if(source.Right.Distance < currentCount)
-		{
-			source.Right.setFill(Color.DARKGREY);
-			currentCount = source.Right.Distance;
-			if(source.isStart == false)
-			{
-				fastestPath(source.Right);
-			}
-		}
-		else if(source.Left.Distance < currentCount)
-		{
-			source.Left.setFill(Color.DARKGREY);
-			currentCount = source.Left.Distance;		
-			if(source.isStart == false)
-			{
-				fastestPath(source.Left);
-			}
 
-		}
-		
 			
 	}
-
-	
-	
-	
-	
-	
-	
-	
 	
 
 }
